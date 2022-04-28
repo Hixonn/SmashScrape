@@ -1,14 +1,22 @@
 #-*- coding: utf-8 -*-
+import pyfiglet
+result = pyfiglet.figlet_format("Smash Scrape", font = "slant")
 from ast import match_case
 from email.policy import default
 import time
 import os
 from tkinter import ALL
+from turtle import end_fill
+
 def clearConsole():
     command = 'clear'
     if os.name in ('nt', 'dos'):  # If Machine is running on Windows, use cls
         command = 'cls'
     os.system(command)
+
+def move (x, y):
+    print("\033[%d;%dH" % (x, y), end="")
+
 from PIL import Image
 import sys
 import requests
@@ -16,7 +24,6 @@ import shutil
 import pysmashgg
 key = "338febc91f4322942391fac3ef99f455"
 smash = pysmashgg.SmashGG(key)
-
 port1 = Image.open("port/1.png")
 port2 = Image.open("port/2.png")
 port3 = Image.open("port/3.png")
@@ -34,22 +41,48 @@ setsLeft = True
 tourney = ""
 #print(str("https://smash.gg/admin/tournament/test-tournament-869/event/melee-singles/set/46746437".split("/", 5)[0]))
 
+print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", "\n")
+print(result)
+print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", "\n")
 
-correctLink = False
+_input = ""
+while(_input != "y" and _input != "n"):
+    print("Load new tournament? (y/n)")
+    _input = input()
+    if _input == "y":
+        correctLink = False
+        while correctLink == False:
+            print("smash.gg link: ", end="")
 
-while correctLink == False:
-    print("smash.gg link: ", end="")
+            _inp = input()
 
-    _inp = input()
+            if str(_inp.split("/")[3]) == "admin":
+                tourney = str(_inp.split("/")[5])
+                correctLink = True
+                with open("currentTourneyName.txt", "w") as f:
+                    f.write(tourney)
+            elif str(_inp.split("/")[3]) == "tournament":
+                tourney = str(_inp.split("/")[4])
+                correctLink = True
+                with open("currentTourneyName.txt", "w") as f:
+                    f.write(tourney)
+            elif str(_inp.split("/")[0] != "https:"):
+                print("Paste full link")
+            
+    elif _input == "n":
+        with open("currentTourneyName.txt", "r") as f:
+            if f.readline() != "":
+                with open("currentTourneyName.txt", "r") as f:
+                    tourney = f.readline()
+                    correctLink = True
+            else:
+                clearConsole()
+                print("No saved tournament")
+                _input = ""
+    else:
+        clearConsole()
+ 
 
-    if str(_inp.split("/")[3]) == "admin":
-        tourney = str(_inp.split("/")[5])
-        correctLink = True
-    elif str(_inp.split("/")[3]) == "tournament":
-        tourney = str(_inp.split("/")[4])
-        correctLink = True
-    elif str(_inp.split("/")[0] != "https:"):
-        print("Paste full link")
         
 print(tourney)
 
@@ -120,9 +153,10 @@ def printSetInfo():
 
         print("___________________________" , "\n")
 
+        increase = 0
 
-        print(len(sets))
         for i in sets:
+            increase += 1
             if len(i["entrant1Name"].split("|")) > 1:
                 p1TempName = i["entrant1Name"].split("| ")[1]
             else:
@@ -134,11 +168,50 @@ def printSetInfo():
                 p2TempName = i["entrant2Name"]
 
 
-            if i["entrant1Score"] == -1:
-                print("| ",i["fullRoundText"]," ->", setNumber,"<- ", "|", p1TempName,  "vs." , p2TempName, " | ", "No score reported")
+            if i["entrant1Score"] == -1 and i["entrant2Score"] == -1:
+                move(40, 0)
+                print(" ->", setNumber,"<- ", end="")
+                move(40, 10)
+                print("|", p1TempName, end="")
+                move(40, 25)
+                print("  vs." , p2TempName, end="")
+                move(40, 50)
+                print(" | ", i["fullRoundText"], end="")
+                move(40, 80)
+                print(" | ", i["fullRoundText"] ," | ", "No score reported")
+            elif i["entrant1Score"] == -1 and i["entrant2Score"] != -1:
+                move(40, 0)
+                print(" ->", setNumber,"<- ", end="")
+                move(40, 10)
+                print("|", p2TempName, end="")
+                move(40, 25)
+                print("  vs." , i["entrant1Name"], "(DQ)", end="")
+                move(40, 50)
+                print(" | ", i["fullRoundText"], end="")
+                move(40, 80)
+                print(" | ", "DQ", i["entrant1Name"])
+            elif i["entrant2Score"] == -1 and i["entrant1Score"] != -1:
+                move(40, 0)
+                print(" ->", setNumber,"<- ", end="")
+                move(40, 10)
+                print("|", p1TempName, end="")
+                move(40, 25)
+                print("  vs." , i["entrant2Name"], "(DQ)", end="")
+                move(40, 50)
+                print(" | ", i["fullRoundText"], end="")
+                move(40, 80)
+                print(" | ", "DQ", "(", i["entrant2Name"] , ")")
             else:
-                print("| ",i["fullRoundText"]," ->", setNumber,"<- ", "|", p1TempName,  "vs." , p2TempName, " | ", i["entrant1Score"] , "-" , i["entrant2Score"])
-
+                move(40, 0)
+                print(" ->", setNumber,"<- ", end="")
+                move(40, 10)
+                print("|", p1TempName, end="")
+                move(40, 25)
+                print("  vs." , p2TempName, end="")
+                move(40, 50)
+                print(" | ", i["fullRoundText"], end="")
+                move(40, 80)
+                print(" | ", i["entrant1Score"] , "-" , i["entrant2Score"])
             setNumber += 1
         
         print()
@@ -164,44 +237,38 @@ while _activeSets > 0:
 
     setID = len(sets)
     
+    class setSelectClass():
+        streamSet = 0
+        def setSelect(selectedSet):
+            streamSet = selectedSet
+            if selectedSet >= 0 and selectedSet < len(sets):
+                print("\n\n")
+                clearConsole()
+                print(sets[selectedSet]["entrant1Name"],"( Port", player1Port,")", "vs.", sets[selectedSet]["entrant2Name"],"( Port", player1Port,")", "<-----")
+                print("Updating text files...")
+                with open('player1/name.txt', 'w') as f:
+                    f.write(sets[selectedSet]["entrant1Name"])
+                with open('player2/name.txt', 'w') as f:
+                    f.write(sets[selectedSet]["entrant2Name"])
+                with open('matchTitle.txt', 'w') as f:
+                    f.write(sets[selectedSet]["fullRoundText"])
 
-    
-    def setSelect():
-        print("\n")
-        print("Select set to stream:", end = " ")
-        selectedSet = int(input()) - 1
-        if selectedSet >= 0 and selectedSet < len(sets):
-            print("\n\n")
-            clearConsole()
-            print(sets[selectedSet]["entrant1Name"],"( Port", player1Port,")", "vs.", sets[selectedSet]["entrant2Name"],"( Port", player1Port,")", "<-----")
-            print("Updating text files...")
-            with open('player1/name.txt', 'w') as f:
-                f.write(sets[selectedSet]["entrant1Name"])
-            with open('player2/name.txt', 'w') as f:
-                f.write(sets[selectedSet]["entrant2Name"])
-            with open('matchTitle.txt', 'w') as f:
-                f.write(sets[selectedSet]["fullRoundText"])
-
-            print("SCORE WRITING CODE")
-            with open('player1/score.txt', 'w') as f:
-                f.write(str(sets[selectedSet]["entrant1Score"]))
-            with open('player2/score.txt', 'w') as f:
-                f.write(str(sets[selectedSet]["entrant2Score"]))
-
-        else:
-            print("Refreshing List...")
+                print("SCORE WRITING CODE")
+                with open('player1/score.txt', 'w') as f:
+                    f.write(str(sets[selectedSet]["entrant1Score"]))
+                with open('player2/score.txt', 'w') as f:
+                    f.write(str(sets[selectedSet]["entrant2Score"]))
 
     def selectPorts():
-        print("Player 1", "s port", "1 - 4")
-
+        print("Port [ 1 - 4 ]")
+        print("Player 1: ", end=" ")
         _p1Port = input()
         player1Port = _p1Port
         p1PortSelected = "port/" + _p1Port + ".png"
         shutil.copyfile(p1PortSelected, "player1/port.png")
 
-
-        print("Player 2", "s port", "1 - 4")
-        
+        print("Port [ 1 - 4 ]")
+        print("Player 2: ", end=" ")
         _p2Port = input()
         player2Port = _p2Port
         p2PortSelected = "port/" + _p2Port + ".png" 
@@ -231,16 +298,23 @@ while _activeSets > 0:
                 correctLink = True
             elif str(_inp.split("/")[0] != "https:"):
                 print("Paste full link")
+            with open("currentTourneyName.txt", "w") as f:
+                f.write(tourney)
                 
         clearConsole()
         printSetInfo()
-        print("1 to select match for stream")
-        print("2 to select port numbers")
-        print("3 to select a different tournament")
+        print("     0: Update score/info/list")
+        print("     1: Choose set for stream")
+        print("     2: Choose port numbers")
+        print("     3: Load a different tournament")
         inp = int(input())
         match inp:
+            case 0:
+                setSelectClass.setSelect(setSelectClass.streamSet)
             case 1:
-                setSelect()
+                print("\n")
+                print("Select set to stream:", end = " ")
+                setSelectClass.setSelect(int(input()) - 1)
                 inp ="0"
                 break
             case 2:
