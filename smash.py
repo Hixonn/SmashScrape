@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 import pyfiglet
-result = pyfiglet.figlet_format("Smash Scrape", font = "slant")
+result = pyfiglet.figlet_format("  Smash Scrape", font = "slant")
 from ast import match_case
 from email.policy import default
 import time
@@ -41,15 +41,18 @@ setsLeft = True
 tourney = ""
 #print(str("https://smash.gg/admin/tournament/test-tournament-869/event/melee-singles/set/46746437".split("/", 5)[0]))
 
-print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", "\n")
+print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", "\n")
 print(result)
-print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", "\n")
+print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", "\n")
 
 _input = ""
 while(_input != "y" and _input != "n"):
-    print("Load new tournament? (y/n)")
+    print("Load previous tournament",'"', end="")
+    with open("currentTourneyName.txt" , "r") as f:
+        print(f.readline(), end="")
+    print('" ?',"(y/n)")
     _input = input()
-    if _input == "y":
+    if _input == "n":
         correctLink = False
         while correctLink == False:
             print("smash.gg link: ", end="")
@@ -69,7 +72,7 @@ while(_input != "y" and _input != "n"):
             elif str(_inp.split("/")[0] != "https:"):
                 print("Paste full link")
             
-    elif _input == "n":
+    elif _input == "y":
         with open("currentTourneyName.txt", "r") as f:
             if f.readline() != "":
                 with open("currentTourneyName.txt", "r") as f:
