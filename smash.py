@@ -50,7 +50,7 @@ while(_input != "y" and _input != "n"):
     print("Load previous tournament",'"', end="")
     with open("currentTourneyName.txt" , "r") as f:
         print(f.readline(), end="")
-    print('" ?',"(y/n)")
+    print('"?',"(y/n)")
     _input = input()
     if _input == "n":
         correctLink = False
