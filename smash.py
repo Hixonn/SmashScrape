@@ -130,12 +130,6 @@ def printSetInfo():
             setID = i["id"]
             matchText = i["fullRoundText"]
 
-        print("___________________________", "\n")
-
-        print("Current StreamLabs Info")
-
-        print("___________________________" , "\n")
-
         with open('matchTitle.txt') as f:
             print("|", f.readline(), "\n\n")
 
@@ -172,48 +166,48 @@ def printSetInfo():
 
 
             if i["entrant1Score"] == -1 and i["entrant2Score"] == -1:
-                move(40, 0)
+                move(35, 0)
                 print(" ->", setNumber,"<- ", end="")
-                move(40, 10)
+                move(35, 10)
                 print("|", p1TempName, end="")
-                move(40, 25)
+                move(35, 25)
                 print("  vs." , p2TempName, end="")
-                move(40, 50)
+                move(35, 50)
                 print(" | ", i["fullRoundText"], end="")
-                move(40, 80)
-                print(" | ", i["fullRoundText"] ," | ", "No score reported")
+                move(35, 80)
+                print(" | ", "Unreported")
             elif i["entrant1Score"] == -1 and i["entrant2Score"] != -1:
-                move(40, 0)
+                move(35, 0)
                 print(" ->", setNumber,"<- ", end="")
-                move(40, 10)
+                move(35, 10)
                 print("|", p2TempName, end="")
-                move(40, 25)
+                move(35, 25)
                 print("  vs." , i["entrant1Name"], "(DQ)", end="")
-                move(40, 50)
+                move(35, 50)
                 print(" | ", i["fullRoundText"], end="")
-                move(40, 80)
+                move(35, 80)
                 print(" | ", "DQ", i["entrant1Name"])
             elif i["entrant2Score"] == -1 and i["entrant1Score"] != -1:
-                move(40, 0)
+                move(35, 0)
                 print(" ->", setNumber,"<- ", end="")
-                move(40, 10)
+                move(35, 10)
                 print("|", p1TempName, end="")
-                move(40, 25)
+                move(35, 25)
                 print("  vs." , i["entrant2Name"], "(DQ)", end="")
-                move(40, 50)
+                move(35, 50)
                 print(" | ", i["fullRoundText"], end="")
-                move(40, 80)
+                move(35, 80)
                 print(" | ", "DQ", "(", i["entrant2Name"] , ")")
             else:
-                move(40, 0)
+                move(35, 0)
                 print(" ->", setNumber,"<- ", end="")
-                move(40, 10)
+                move(35, 10)
                 print("|", p1TempName, end="")
-                move(40, 25)
+                move(35, 25)
                 print("  vs." , p2TempName, end="")
-                move(40, 50)
+                move(35, 50)
                 print(" | ", i["fullRoundText"], end="")
-                move(40, 80)
+                move(35, 80)
                 print(" | ", i["entrant1Score"] , "-" , i["entrant2Score"])
             setNumber += 1
         
@@ -263,14 +257,12 @@ while _activeSets > 0:
                     f.write(str(sets[selectedSet]["entrant2Score"]))
 
     def selectPorts():
-        print("Port [ 1 - 4 ]")
+        print("SELECT PORTS (1 - 4)")
         print("Player 1: ", end=" ")
         _p1Port = input()
         player1Port = _p1Port
         p1PortSelected = "port/" + _p1Port + ".png"
         shutil.copyfile(p1PortSelected, "player1/port.png")
-
-        print("Port [ 1 - 4 ]")
         print("Player 2: ", end=" ")
         _p2Port = input()
         player2Port = _p2Port
@@ -306,10 +298,16 @@ while _activeSets > 0:
                 
         clearConsole()
         printSetInfo()
-        print("     0: Update score/info/list")
-        print("     1: Choose set for stream")
-        print("     2: Choose port numbers")
-        print("     3: Load a different tournament")
+        print("~~~~~~~~~~~~~~~| OPTIONS |~~~~~~~~~~~~~~~")
+
+        print("  -----------------------------------"       )
+        print("     0: UPDATE INFO FROM SITE"               )
+        print("  -----------------------------------"       )
+        print("     1: CHOOSE STREAM SET"                   )
+        print("     2: CHOOSE PORTS FOR PLAYERS"            )
+        print("     3: LOAD A DIFFERENT TOURNAMENT"         )
+        print("  -----------------------------------"       )
+
         inp = int(input())
         match inp:
             case 0:
